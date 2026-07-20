@@ -1,68 +1,78 @@
-
 # CHANDRA-SETU
 
-<p align="center">
-  <strong>An intelligent lunar mission planning framework for subsurface ice detection, landing site selection, and rover traverse planning using Chandrayaan-2 DFSAR radar and DEM data.</strong>
-</p>
+An intelligent lunar mission planning framework that detects potential subsurface ice, identifies safe landing sites, and plans rover traverse routes using Chandrayaan-2 DFSAR radar and DEM data.
 
-<p align="center">
-  <a href="https://huggingface.co/spaces/iaaryan/Buzzy-Bugs-BAH-2026-Chandra-Setu">🚀 Live Demo</a> •
-  <a href="./notebooks/chandra_setu.ipynb">📓 Notebook</a> •
-  <a href="./docs/BuzzyBugs_BAH-26_Chandrasetu.pdf">📄 Presentation</a>
-</p>
+> **Status:** Experimental research project developed for BAH '26 Challenge #8. This project is intended for research, learning, and demonstration purposes and is not intended for operational mission planning.
 
-> **Status:** Experimental research project developed for **BAH '26 – Challenge #8**. This repository is intended for research, learning, and demonstration purposes.
+## What is CHANDRA-SETU?
 
----
+CHANDRA-SETU is a computational mission planning framework that combines radar-derived ice detection, terrain analysis, landing site evaluation, and rover path planning into a single workflow.
 
-# What is CHANDRA-SETU?
-
-CHANDRA-SETU is a notebook-first computational workflow that combines Chandrayaan-2 DFSAR radar products with DEM-derived terrain information to support lunar mission planning.
-
-The workflow identifies potential subsurface ice targets, evaluates candidate landing sites, estimates terrain illumination using a DEM-derived proxy, and computes an efficient rover traverse route.
+The project processes Chandrayaan-2 DFSAR radar information together with Digital Elevation Model (DEM) data to identify potential subsurface ice targets, determine safe landing regions, and compute an efficient rover traverse path.
 
 ```text
-DFSAR Radar + DEM
-        │
-        ▼
- Radar Analysis
-        │
-        ▼
- Ice Target Detection
-        │
-        ▼
+DFSAR Radar
+      +
+ DEM Terrain
+      ↓
+ Ice Detection
+      ↓
  Landing Site Selection
-        │
-        ▼
- Illumination Proxy
-        │
-        ▼
+      ↓
+ Solar Illumination Analysis
+      ↓
  Rover Traverse Planning
-        │
-        ▼
- Interactive Dashboard
+      ↓
+ Mission Control Dashboard
 ```
 
-# Features
+## Features
 
-- Subsurface ice target detection
+- Radar-based subsurface ice target detection
 - DEM-based terrain analysis
 - Landing site evaluation
-- A* rover traverse planning
+- Hazard-aware rover traverse planning
 - Solar illumination proxy analysis
 - Interactive Gradio dashboard
 - Hugging Face deployment
-- Google Colab implementation
+- Google Colab notebook implementation
+- Visualization of mission outputs
 
-# Screenshots
+## Mission Planning Pipeline
 
-## Dashboard
-
-<p align="center">
-<img src="assets/screenshots/dashboard.png" width="95%">
-</p>
+```text
+DFSAR Radar
+      +
+Digital Elevation Model
+      ↓
+Radar Processing
+      ↓
+CPR & DoP Analysis
+      ↓
+Terrain Slope Analysis
+      ↓
+Potential Ice Targets
+      ↓
+Landing Site Selection
+      ↓
+Solar Illumination Analysis
+      ↓
+A* Rover Path Planning
+      ↓
+Mission Dashboard
+```
 
 ## Ice Detection
+
+The notebook applies radar-derived CPR (Circular Polarization Ratio), DoP, and terrain slope constraints to identify candidate subsurface ice locations.
+
+Current decision rules include:
+
+- CPR ≥ 1.0
+- DoP < 0.13
+- Terrain slope ≤ 15°
+
+These thresholds are applied together to reduce false positives caused by rough terrain.
 
 <p align="center">
 <img src="assets/screenshots/iceTargets.png" width="95%">
@@ -70,50 +80,75 @@ DFSAR Radar + DEM
 
 ## Landing Site Selection
 
+Landing candidates are evaluated using:
+
+- Terrain slope
+- Hazard constraints
+- Proximity to detected ice targets
+
+Only locations satisfying the terrain constraints are considered suitable landing regions.
+
 <p align="center">
 <img src="assets/screenshots/landingSiteSelection.png" width="95%">
 </p>
 
+
+## Solar Illumination Analysis
+
+Because real-time solar ephemeris information is not available within the notebook workflow, terrain aspect derived from the DEM is used as an illumination proxy.
+
+Shadowed terrain receives additional traversal cost during rover route planning.
+
 ## Rover Traverse Planning
+
+The rover path is generated using the A* path planning algorithm.
+
+Traversal cost incorporates terrain conditions together with the illumination penalty so that hazardous or poorly illuminated regions become less favorable.
+
+```text
+Landing Site
+      ↓
+Terrain Cost Map
+      ↓
+A* Search
+      ↓
+Optimal Traverse
+      ↓
+Ice Target
+```
 
 <p align="center">
 <img src="assets/screenshots/roverPathPlanning.png" width="95%">
 </p>
 
-> **Note:** If your dashboard screenshot currently has the filename `Screenshot (1781).png`, rename it to `dashboard.png` or update the image path above accordingly.
+## Mission Control Dashboard
 
-# Mission Workflow
+The project includes an interactive dashboard built with **Gradio** and deployed on Hugging Face.
 
-```mermaid
-graph TD
-A[DFSAR Radar] --> B[CPR & DoP Analysis]
-C[DEM] --> D[Slope Analysis]
-B --> E[Ice Target Detection]
-D --> F[Landing Site Selection]
-E --> G[A* Rover Planner]
-F --> G
-G --> H[Mission Dashboard]
-```
+The dashboard allows visualization of:
 
-# Technology Stack
+- Ice targets
+- Landing site selection
+- Rover traverse path
+- Mission parameters
+- Mission outputs
 
-| Component | Technology |
-|-----------|------------|
-| Programming Language | Python |
-| Development | Google Colab |
-| Dashboard | Gradio |
-| Deployment | Hugging Face Spaces |
-| Terrain Analysis | DEM |
-| Radar Data | Chandrayaan-2 DFSAR |
-| Path Planning | A* Algorithm |
-| Visualization | Matplotlib |
+<p align="center">
+<img src="assets/screenshots/dashboard.png" width="95%">
+</p>
 
-# Repository Structure
+### Live Demo
+
+https://huggingface.co/spaces/iaaryan/Buzzy-Bugs-BAH-2026-Chandra-Setu
+
+## Project Structure
 
 ```text
 chandra-setu/
+│
 ├── assets/
 │   └── screenshots/
+├── data/
 ├── docs/
 ├── notebooks/
 │   └── chandra_setu.ipynb
@@ -123,41 +158,101 @@ chandra-setu/
 └── LICENSE
 ```
 
-# Dataset
+## Technology Stack
 
-The notebook uses Chandrayaan-2 related radar and terrain datasets accessed from Google Drive during execution in Google Colab.
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| Language | Python | Core implementation |
+| Notebook | Google Colab | Development environment |
+| Radar Processing | DFSAR | Ice detection inputs |
+| Terrain | DEM | Terrain analysis |
+| Navigation | A* Algorithm | Rover path planning |
+| Visualization | Matplotlib | Output rendering |
+| Dashboard | Gradio | Interactive interface |
+| Deployment | Hugging Face Spaces | Live demonstration |
 
-# Running the Notebook
+## Technical Architecture
 
-1. Open `notebooks/chandra_setu.ipynb` in Google Colab.
-2. Mount Google Drive.
-3. Update dataset paths if required.
-4. Run all notebook cells.
+```text
+DFSAR Radar
+        +
+DEM Terrain
+        ↓
+Preprocessing
+        ↓
+CPR / DoP Analysis
+        ↓
+Slope Filtering
+        ↓
+Ice Detection
+        ↓
+Landing Site Selection
+        ↓
+Solar Analysis
+        ↓
+A* Path Planning
+        ↓
+Mission Dashboard
+```
 
-# Live Demo
+## Dataset
 
-https://huggingface.co/spaces/iaaryan/Buzzy-Bugs-BAH-2026-Chandra-Setu
+The notebook is designed to use Chandrayaan-2 related radar and terrain datasets mounted through Google Drive inside Google Colab.
 
-# Current Limitations
+The current implementation intentionally preserves the original Google Drive workflow used during development.
 
-- Notebook-first implementation
-- Depends on Google Drive mounted datasets
-- Threshold-based analysis
-- DEM illumination proxy
-- Intended for research and educational use
+## Notebook
 
-# Future Scope
+The complete implementation is available in:
+
+```text
+notebooks/chandra_setu.ipynb
+```
+
+## Screenshots
+
+Project screenshots are available in:
+
+```text
+assets/screenshots/
+```
+
+## Current Limitations
+
+Current limitations include:
+
+- Implemented as a research notebook
+- Depends on Google Colab and Google Drive data paths
+- Uses predefined threshold-based decision rules
+- Uses DEM-derived illumination proxy
+- Intended for experimentation rather than operational deployment
+
+## Good Use Cases
+
+This project is suitable for:
+
+- Lunar mission planning demonstrations
+- Remote sensing education
+- Research prototypes
+- Space technology hackathons
+- Terrain analysis experiments
+- Academic projects
+
+## Future Scope
+
+Future versions may include:
 
 - Machine learning based ice classification
-- Improved terrain risk estimation
+- Adaptive threshold estimation
 - Multi-objective rover planning
-- Real solar illumination modelling
-- Multi-rover coordination
+- Real solar ephemeris integration
+- Multi-rover mission planning
+- Confidence estimation and uncertainty analysis
 
-# Author
+## Author
 
 Built by **Aaryan**.
 
 ---
 
-Contributions, suggestions and constructive feedback are welcome.
+If you find a bug or would like to improve the project, contributions and constructive feedback are welcome.
